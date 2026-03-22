@@ -1,0 +1,602 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>MindSpace</title>
+  <link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --sage:       #7A9E8E;
+      --sage-light: #A8C4B8;
+      --sage-pale:  #EAF2EE;
+      --sky-deep:   #5B8FAB;
+      --cream:      #F7F5F0;
+      --stone:      #8C8880;
+      --ink:        #2C3830;
+    }
+
+    html, body {
+      height: 100%; width: 100%;
+      font-family: 'DM Sans', sans-serif;
+      background: var(--cream);
+      color: var(--ink);
+      overflow: hidden;
+    }
+
+    .bg {
+      position: fixed; inset: 0; z-index: 0;
+      background:
+        radial-gradient(ellipse 80% 60% at 15% 10%, rgba(168,196,184,0.22) 0%, transparent 60%),
+        radial-gradient(ellipse 60% 70% at 88% 85%, rgba(184,212,232,0.18) 0%, transparent 55%);
+      pointer-events: none;
+    }
+
+    /* ══════════════════════════════
+       LANDING
+    ══════════════════════════════ */
+    #landing {
+      position: fixed; inset: 0; z-index: 20;
+      display: flex; flex-direction: column;
+      align-items: center; justify-content: center;
+      transition: opacity 0.4s ease;
+    }
+    #landing.out { opacity: 0; pointer-events: none; }
+
+    #logo-icon {
+      width: 72px; height: 72px; background: var(--sage);
+      border-radius: 22px; display: flex; align-items: center; justify-content: center;
+      box-shadow: 0 8px 28px rgba(122,158,142,0.3);
+      animation: float 4s ease-in-out infinite;
+      margin-bottom: 18px; flex-shrink: 0;
+    }
+    @keyframes float { 0%,100%{transform:translateY(0)} 50%{transform:translateY(-7px)} }
+    #logo-icon svg { width: 34px; height: 34px; display: block; }
+
+    #logo-title {
+      font-family: 'DM Serif Display', serif;
+      font-size: 52px; letter-spacing: -1.5px; line-height: 1;
+      color: var(--ink); white-space: nowrap; margin-bottom: 22px;
+    }
+    #logo-title span { color: var(--sage); }
+
+    #landing-tagline {
+      font-size: 16px; color: var(--stone); font-weight: 300;
+      line-height: 1.7; text-align: center; margin-bottom: 44px;
+    }
+
+    #cta-btn {
+      display: flex; align-items: center; gap: 10px;
+      background: var(--sage); color: white;
+      font-family: 'DM Sans', sans-serif; font-size: 15px; font-weight: 500;
+      border: none; border-radius: 14px; padding: 16px 32px;
+      cursor: pointer; white-space: nowrap;
+      box-shadow: 0 4px 20px rgba(122,158,142,0.35);
+      transition: background 0.2s, transform 0.15s, box-shadow 0.2s;
+      margin-bottom: 32px;
+    }
+    #cta-btn:hover { background: var(--sky-deep); transform: translateY(-2px); box-shadow: 0 8px 28px rgba(91,143,171,0.35); }
+    #cta-btn svg { width: 17px; height: 17px; flex-shrink: 0; transition: transform 0.2s; }
+    #cta-btn:hover svg { transform: translateX(3px); }
+
+    .trust-row { display: flex; gap: 20px; flex-wrap: wrap; justify-content: center; }
+    .trust-pill { display: flex; align-items: center; gap: 6px; font-size: 12px; color: var(--stone); }
+    .trust-pill::before { content: ''; width: 6px; height: 6px; border-radius: 50%; background: var(--sage-light); flex-shrink: 0; }
+
+    /* ══════════════════════════════
+       CHAT
+    ══════════════════════════════ */
+    #chat {
+      position: fixed; inset: 0; z-index: 15;
+      display: flex; flex-direction: column; align-items: center;
+      opacity: 0; transform: translateY(40px); pointer-events: none;
+    }
+    #chat.visible { opacity: 1; transform: translateY(0); pointer-events: all; }
+
+    .chat-wrap { display: flex; flex-direction: column; width: 100%; max-width: 720px; height: 100vh; }
+
+    .chat-header {
+      height: 68px; flex-shrink: 0; padding: 0 32px;
+      border-bottom: 1px solid rgba(122,158,142,0.12);
+      display: flex; align-items: center; justify-content: space-between;
+    }
+
+    #anchor-row {
+      display: flex; align-items: center; gap: 8px;
+      visibility: hidden; height: 32px;
+    }
+    .anc-icon { width: 32px; height: 32px; background: var(--sage); border-radius: 9px; flex-shrink: 0; }
+    .anc-name {
+      font-family: 'DM Serif Display', serif; font-size: 17px;
+      color: var(--ink); letter-spacing: -0.3px; white-space: nowrap; line-height: 32px;
+    }
+    .anc-name span { color: var(--sage); }
+
+    #therapist-tag {
+      display: flex; align-items: center; gap: 7px;
+      background: white; border: 1px solid rgba(122,158,142,0.2);
+      border-radius: 20px; padding: 5px 13px;
+      opacity: 0; transition: opacity 0.5s ease 0.7s;
+    }
+    #therapist-tag.in { opacity: 1; }
+    .t-dot { width: 6px; height: 6px; border-radius: 50%; background: var(--sage); animation: pulse 2s ease-in-out infinite; }
+    @keyframes pulse { 0%,100%{opacity:1;transform:scale(1)} 50%{opacity:0.5;transform:scale(0.8)} }
+    .t-name { font-size: 12px; font-weight: 500; color: var(--ink); }
+
+    #messages {
+      flex: 1; overflow-y: auto; padding: 24px 32px;
+      display: flex; flex-direction: column; gap: 20px; scroll-behavior: smooth;
+    }
+    #messages::-webkit-scrollbar { width: 4px; }
+    #messages::-webkit-scrollbar-thumb { background: var(--sage-light); border-radius: 4px; }
+
+    .welcome-card {
+      background: white; border: 1px solid rgba(122,158,142,0.15);
+      border-radius: 18px; padding: 20px 22px;
+    }
+    .welcome-card h3 {
+      font-family: 'DM Serif Display', serif; font-size: 17px; font-weight: 400;
+      color: var(--ink); margin-bottom: 7px;
+    }
+    .welcome-card p { font-size: 13px; color: var(--stone); line-height: 1.65; }
+
+    .msg-group { display: flex; flex-direction: column; gap: 4px; }
+    .msg-group.user      { align-items: flex-end; }
+    .msg-group.assistant { align-items: flex-start; }
+
+    .msg-meta { font-size: 11px; color: var(--stone); margin-bottom: 4px; display: flex; align-items: center; gap: 6px; }
+    .meta-av {
+      width: 20px; height: 20px; border-radius: 50%;
+      background: var(--sage-pale); display: flex; align-items: center; justify-content: center;
+    }
+    .meta-av svg { width: 11px; height: 11px; }
+
+    .bubble {
+      max-width: 72%; padding: 13px 18px; font-size: 14px; line-height: 1.7;
+      border-radius: 20px; animation: fadeUp 0.3s ease forwards;
+    }
+    @keyframes fadeUp { from{opacity:0;transform:translateY(8px)} to{opacity:1;transform:translateY(0)} }
+
+    .user .bubble { background: var(--sky-deep); color: white; border-bottom-right-radius: 5px; }
+    .assistant .bubble {
+      background: white; color: var(--ink);
+      border: 1px solid rgba(122,158,142,0.18); border-bottom-left-radius: 5px;
+      box-shadow: 0 1px 8px rgba(44,56,48,0.04);
+    }
+
+    .thinking-dots span {
+      display: inline-block; width: 6px; height: 6px; border-radius: 50%;
+      background: var(--sage-light); margin: 0 2px;
+      animation: bounce 1.2s ease-in-out infinite;
+    }
+    .thinking-dots span:nth-child(2) { animation-delay: 0.2s; }
+    .thinking-dots span:nth-child(3) { animation-delay: 0.4s; }
+    @keyframes bounce { 0%,80%,100%{transform:translateY(0)} 40%{transform:translateY(-6px)} }
+
+    .input-area { padding: 12px 32px 24px; flex-shrink: 0; border-top: 1px solid rgba(122,158,142,0.12); }
+    .input-wrap {
+      display: flex; gap: 10px; align-items: flex-end;
+      background: white; border: 1.5px solid rgba(122,158,142,0.22);
+      border-radius: 16px; padding: 10px 10px 10px 18px;
+      transition: border-color 0.2s; box-shadow: 0 1px 8px rgba(44,56,48,0.04);
+    }
+    .input-wrap:focus-within { border-color: var(--sage); }
+    #userInput {
+      flex: 1; border: none; outline: none;
+      font-family: 'DM Sans', sans-serif; font-size: 14px; color: var(--ink);
+      background: transparent; resize: none; line-height: 1.5; max-height: 120px;
+    }
+    #userInput::placeholder { color: #B8C0BC; }
+    #send-slot { width: 38px; height: 38px; flex-shrink: 0; visibility: hidden; }
+    .input-hint { font-size: 11px; color: var(--stone); margin-top: 7px; text-align: center; opacity: 0.6; }
+
+    /* ══════════════════════════════
+       FLYING PIECES
+    ══════════════════════════════ */
+    .fly { position: fixed; z-index: 300; pointer-events: none; }
+
+    #fly-icon { background: var(--sage); display: flex; align-items: center; justify-content: center; }
+    #fly-icon svg { display: block; }
+
+    #fly-title { font-family: 'DM Serif Display', serif; color: var(--ink); white-space: nowrap; line-height: 1; }
+    #fly-title span { color: var(--sage); }
+
+    #fly-btn {
+      display: flex; align-items: center; justify-content: center; gap: 10px;
+      background: var(--sage); color: white;
+      font-family: 'DM Sans', sans-serif; font-weight: 500;
+      border: none; overflow: hidden; cursor: pointer;
+    }
+    #fly-btn:hover   { background: var(--sky-deep); }
+    #fly-btn:disabled { opacity: 0.4; cursor: default; }
+    #fly-btn-label { white-space: nowrap; }
+    #fly-btn-arrow { flex-shrink: 0; }
+    #fly-btn-send  { position: absolute; opacity: 0; }
+  </style>
+</head>
+<body>
+<div class="bg"></div>
+
+<!-- ═══ LANDING ═══ -->
+<div id="landing">
+  <div id="logo-icon">
+    <svg viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2" stroke-linecap="round">
+      <path d="M12 2C8 2 4 5 4 9c0 5 8 13 8 13s8-8 8-13c0-4-4-7-8-7z"/>
+      <circle cx="12" cy="9" r="2.5" fill="white" stroke="none"/>
+    </svg>
+  </div>
+  <div id="logo-title">Mind<span>Space</span></div>
+  <p id="landing-tagline">A quiet, private place to talk.<br>No judgement. No pressure. Just you.</p>
+  <button id="cta-btn" onclick="enterChat()">
+    Talk to a therapist
+    <svg viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+      <path d="M5 12h14M13 6l6 6-6 6"/>
+    </svg>
+  </button>
+  <div class="trust-row">
+    <span class="trust-pill">Anonymous</span>
+    <span class="trust-pill">Private</span>
+    <span class="trust-pill">Available anytime</span>
+  </div>
+</div>
+
+<!-- ═══ CHAT ═══ -->
+<div id="chat">
+  <div class="chat-wrap">
+    <div class="chat-header">
+      <div id="anchor-row">
+        <div class="anc-icon"></div>
+        <div class="anc-name">Mind<span>Space</span></div>
+      </div>
+      <div id="therapist-tag">
+        <div class="t-dot"></div>
+        <span class="t-name">Dr. MindSpace · Online</span>
+      </div>
+    </div>
+
+    <div id="messages">
+      <div class="welcome-card">
+        <h3>Welcome to your safe space 🌿</h3>
+        <p>This is a private, judgment-free space just for you. You don't need to share your name or any personal details. Take your time — I'm here to listen.</p>
+      </div>
+      <div class="msg-group assistant">
+        <div class="msg-meta">
+          <div class="meta-av">
+            <svg viewBox="0 0 24 24" fill="none" stroke="var(--sage)" stroke-width="2" stroke-linecap="round">
+              <path d="M12 2C8 2 4 5 4 9c0 5 8 13 8 13s8-8 8-13c0-4-4-7-8-7z"/>
+              <circle cx="12" cy="9" r="2" fill="var(--sage)" stroke="none"/>
+            </svg>
+          </div>
+          Dr. MindSpace
+        </div>
+        <div class="bubble">Hello, and welcome. I'm glad you're here today. How are you feeling right now?</div>
+      </div>
+    </div>
+
+    <div class="input-area">
+      <div class="input-wrap">
+        <textarea id="userInput" rows="1" placeholder="Share what's on your mind…"></textarea>
+        <div id="send-slot"></div>
+      </div>
+      <div class="input-hint">Press Enter to send · Shift+Enter for new line</div>
+    </div>
+  </div>
+</div>
+
+<!-- ═══ FLYING PIECES ═══ -->
+<div id="fly-icon" class="fly" style="display:none">
+  <svg viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2" stroke-linecap="round">
+    <path d="M12 2C8 2 4 5 4 9c0 5 8 13 8 13s8-8 8-13c0-4-4-7-8-7z"/>
+    <circle cx="12" cy="9" r="2.5" fill="white" stroke="none"/>
+  </svg>
+</div>
+<div id="fly-title" class="fly" style="display:none">Mind<span>Space</span></div>
+<button id="fly-btn" class="fly" style="display:none" disabled onclick="sendMessage()">
+  <span id="fly-btn-label">Talk to a therapist</span>
+  <svg id="fly-btn-arrow" width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+    <path d="M5 12h14M13 6l6 6-6 6"/>
+  </svg>
+  <svg id="fly-btn-send" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+    <line x1="22" y1="2" x2="11" y2="13"/>
+    <polygon points="22 2 15 22 11 13 2 9 22 2" fill="white" stroke="none"/>
+  </svg>
+</button>
+<script src="config.js"></script>
+<script>
+  // ── PASTE YOUR API KEY HERE ──────────────────────
+  const API_KEY = CONFIG.API_KEY;
+  // ─────────────────────────────────────────────────
+
+  // ══════════════════════════════════════════════════
+  // PATIENT PROFILES
+  // Add or edit patients here. Fields can be updated
+  // dynamically as the session progresses.
+  // ══════════════════════════════════════════════════
+  const patients = {
+    /*user_1: {
+      id:            "User_1",
+      type:          "Normal",
+      stressScore:   51,
+      stressLevel:   "Mild",
+      colorIndicator:"Yellow",
+      summary:       "This user shows a mild stress level. Their recent messages suggest occasional stress but generally balanced and calm.",
+      sessionScores:  [],
+      sessionSignals: []
+    },*/
+    user_1: {
+      id:            "User_2",
+      type:          "Stressed",
+      stressScore:   70,
+      stressLevel:   "High",
+      colorIndicator:"Red",
+      summary:       "This user shows a high stress level. Their messages indicate significant stress, anxiety, or pressure. Immediate support or attention may be needed.",
+      sessionScores:  [],
+      sessionSignals: []
+    }
+    // Add more patients here:
+    // user_2: { id: "stressed_User 2", type: "Stressed", stressScore: 70, ... }
+  };
+
+  // ── Load patient and build history context ────────
+  function loadPatient(key) {
+    const p = patients[key];
+    const profileContext = [
+      /*{
+        //neutral user
+        role: "user",
+        content: "I'm feeling neutral today, neither good nor bad."
+      },
+      {
+        role: "assistant",
+        content: "Neutral days are a perfectly valid part of the process. Is there anything specific on your mind?"
+      },*/
+      {
+        //stressed user
+        role: "user",
+        content: "I'm feeling stressed today, I'm not sure what to do."
+      },
+      {
+        role: "assistant",
+        content: "I'm here to help you. Is there anything specific on your mind?"
+      }
+    ];
+    return { patient: p, profileContext };
+  }
+
+  // ── Build dynamic system prompt ───────────────────
+  function getSystemPrompt(patient) {
+    const scores = patient.sessionScores;
+    const trend  = scores.length < 2
+      ? "not enough data yet"
+      : scores.at(-1) > scores.at(-2) ? "increasing"
+      : scores.at(-1) < scores.at(-2) ? "decreasing"
+      : "stable";
+
+    return `You are a supportive AI companion.
+
+You will receive: a stress score, stress level, color indicator, session history, and the user's current message.
+
+Reason internally about who this person is, what shifted, what they need right now, and what would be wrong to say. Never display your reasoning process. Never output any thinking tags or reasoning steps.
+
+Your response should be only what the user sees — warm, human, grounded in what you observed. No bullet points. No lists. No visible analysis.
+
+When trauma, avoidance patterns, or escalating distress are present in the intake data, weave professional support naturally into your first response.`;
+  }
+
+  // ══════════════════════════════════════════════════
+  // SESSION INIT — change "user_1" to load a different patient
+  // ══════════════════════════════════════════════════
+  const { patient, profileContext } = loadPatient("user_1");
+  const history = [...profileContext];
+
+  // ══════════════════════════════════════════════════
+  // UI + ANIMATION
+  // ══════════════════════════════════════════════════
+  const messagesEl = document.getElementById("messages");
+  const inputEl    = document.getElementById("userInput");
+  const flyIcon    = document.getElementById("fly-icon");
+  const flyTitle   = document.getElementById("fly-title");
+  const flyBtn     = document.getElementById("fly-btn");
+
+  let chatMode = false;
+
+  const R = el => el.getBoundingClientRect();
+  const S = (el, styles) => Object.assign(el.style, styles);
+  const T = (el, dur, ease, props) => {
+    el.style.transition = props.map(p => `${p} ${dur}ms ${ease}`).join(", ");
+  };
+
+  function enterChat() {
+    if (chatMode) return;
+    chatMode = true;
+
+    const DUR  = 680;
+    const EASE = "cubic-bezier(0.65,0,0.35,1)";
+
+    const iconR  = R(document.getElementById("logo-icon"));
+    const titleR = R(document.getElementById("logo-title"));
+    const btnR   = R(document.getElementById("cta-btn"));
+
+    const chatEl = document.getElementById("chat");
+    S(chatEl, { display:"flex", opacity:"0", transform:"translateY(40px)", pointerEvents:"none" });
+    chatEl.getBoundingClientRect();
+
+    const slotRaw = R(document.getElementById("send-slot"));
+    const slotR   = { top: slotRaw.top - 40, left: slotRaw.left, width: slotRaw.width, height: slotRaw.height };
+
+    S(flyIcon, { display:"flex", top:iconR.top+"px", left:iconR.left+"px", width:iconR.width+"px", height:iconR.height+"px", borderRadius:"22px", boxShadow:"0 8px 28px rgba(122,158,142,0.3)", transition:"none" });
+    S(flyIcon.querySelector("svg"), { width:"34px", height:"34px" });
+
+    S(flyTitle, { display:"block", top:titleR.top+"px", left:titleR.left+"px", fontSize:"52px", letterSpacing:"-1.5px", transition:"none" });
+
+    S(flyBtn, { display:"flex", pointerEvents:"all", top:btnR.top+"px", left:btnR.left+"px", width:btnR.width+"px", height:btnR.height+"px", borderRadius:"14px", fontSize:"15px", transition:"none" });
+    S(document.getElementById("fly-btn-label"), { opacity:"1", transition:"none" });
+    S(document.getElementById("fly-btn-arrow"), { opacity:"1", transition:"none" });
+    S(document.getElementById("fly-btn-send"),  { opacity:"0", transition:"none" });
+
+    S(document.getElementById("logo-icon"),       { opacity:"0" });
+    S(document.getElementById("logo-title"),      { opacity:"0" });
+    S(document.getElementById("cta-btn"),         { opacity:"0", pointerEvents:"none" });
+    S(document.getElementById("landing-tagline"), { opacity:"0", transition:"opacity 0.3s ease" });
+    document.querySelector(".trust-row").style.cssText += ";opacity:0;transition:opacity 0.3s ease";
+
+    requestAnimationFrame(() => {
+      requestAnimationFrame(() => {
+
+        chatEl.style.transition = `opacity ${DUR}ms ease, transform ${DUR}ms cubic-bezier(0.4,0,0.2,1)`;
+        chatEl.style.opacity    = "1";
+        chatEl.style.transform  = "translateY(0)";
+        chatEl.style.pointerEvents = "all";
+
+        document.getElementById("therapist-tag").classList.add("in");
+        document.getElementById("landing").classList.add("out");
+
+        const headerFinalTop  = R(document.querySelector(".chat-header")).top - 40;
+        const iconTargetTop   = headerFinalTop + 18;
+        const titleTargetTop  = headerFinalTop + 24;
+        const iconTargetLeft  = 32;
+        const titleTargetLeft = 72;
+
+        T(flyIcon, DUR, EASE, ["top","left","width","height","border-radius","box-shadow"]);
+        S(flyIcon, { top:iconTargetTop+"px", left:iconTargetLeft+"px", width:"32px", height:"32px", borderRadius:"9px", boxShadow:"none" });
+        const iconSvg = flyIcon.querySelector("svg");
+        iconSvg.style.transition = `width ${DUR}ms ${EASE}, height ${DUR}ms ${EASE}`;
+        iconSvg.style.width  = "15px";
+        iconSvg.style.height = "15px";
+
+        T(flyTitle, DUR, EASE, ["top","left","font-size","letter-spacing"]);
+        S(flyTitle, { top:titleTargetTop+"px", left:titleTargetLeft+"px", fontSize:"17px", letterSpacing:"-0.3px" });
+
+        setTimeout(() => {
+          S(document.getElementById("fly-btn-label"), { transition:"opacity 0.2s ease", opacity:"0" });
+          S(document.getElementById("fly-btn-arrow"), { transition:"opacity 0.2s ease", opacity:"0" });
+        }, DUR * 0.35);
+        setTimeout(() => {
+          S(document.getElementById("fly-btn-send"), { transition:"opacity 0.2s ease", opacity:"1" });
+        }, DUR * 0.65);
+
+        T(flyBtn, DUR, EASE, ["top","left","width","height","border-radius","font-size"]);
+        S(flyBtn, { top:slotR.top+"px", left:slotR.left+"px", width:slotR.width+"px", height:slotR.height+"px", borderRadius:"10px", fontSize:"0px" });
+      });
+    });
+
+    setTimeout(() => { flyBtn.disabled = false; lockBtn(); inputEl.focus(); }, DUR + 80);
+  }
+
+  function lockBtn() {
+    const s = R(document.getElementById("send-slot"));
+    S(flyBtn, { transition:"none", top:s.top+"px", left:s.left+"px", width:s.width+"px", height:s.height+"px" });
+  }
+
+  window.addEventListener("resize", () => { if (chatMode) lockBtn(); });
+
+  inputEl.addEventListener("keydown", e => {
+    if (e.key === "Enter" && !e.shiftKey) { e.preventDefault(); sendMessage(); }
+  });
+
+  inputEl.addEventListener("input", () => {
+    inputEl.style.height = "auto";
+    inputEl.style.height = Math.min(inputEl.scrollHeight, 120) + "px";
+    if (chatMode) lockBtn();
+  });
+
+  function mkMeta(role) {
+    const m = document.createElement("div");
+    m.className = "msg-meta";
+    if (role === "assistant") {
+      m.innerHTML = `<div class="meta-av"><svg viewBox="0 0 24 24" fill="none" stroke="var(--sage)" stroke-width="2" stroke-linecap="round"><path d="M12 2C8 2 4 5 4 9c0 5 8 13 8 13s8-8 8-13c0-4-4-7-8-7z"/><circle cx="12" cy="9" r="2" fill="var(--sage)" stroke="none"/></svg></div>Dr. MindSpace`;
+    } else {
+      m.textContent = "You";
+    }
+    return m;
+  }
+
+  function addBubble(role, text) {
+    const g = document.createElement("div");
+    g.className = "msg-group " + role;
+    const b = document.createElement("div");
+    b.className = "bubble";
+    b.textContent = text;
+    g.appendChild(mkMeta(role));
+    g.appendChild(b);
+    messagesEl.appendChild(g);
+    messagesEl.scrollTop = messagesEl.scrollHeight;
+  }
+
+  function addThinking() {
+    const g = document.createElement("div");
+    g.className = "msg-group assistant";
+    const b = document.createElement("div");
+    b.className = "bubble";
+    b.innerHTML = '<div class="thinking-dots"><span></span><span></span><span></span></div>';
+    g.appendChild(mkMeta("assistant"));
+    g.appendChild(b);
+    messagesEl.appendChild(g);
+    messagesEl.scrollTop = messagesEl.scrollHeight;
+    return g;
+  }
+
+  async function sendMessage() {
+    const text = inputEl.value.trim();
+    if (!text) return;
+    inputEl.value = "";
+    inputEl.style.height = "auto";
+    lockBtn();
+    flyBtn.disabled = true;
+
+    addBubble("user", text);
+    history.push({ role: "user", content: text });
+    const thinking = addThinking();
+
+    try {
+      const res = await fetch("https://api.anthropic.com/v1/messages", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          "x-api-key": API_KEY,
+          "anthropic-version": "2023-06-01",
+          "anthropic-dangerous-direct-browser-access": "true"
+        },
+        body: JSON.stringify({
+          model: "claude-sonnet-4-20250514",
+          max_tokens: 1024,
+          system: getSystemPrompt(patient), // rebuilt every call with latest stress data
+          messages: history
+        })
+      });
+
+      const data = await res.json();
+      const raw  = data.content ? data.content[0].text : "Something went wrong. Please try again.";
+
+      // Parse and store stress data silently
+      const stressMatch = raw.match(/<stress_data>([\s\S]*?)<\/stress_data>/);
+      if (stressMatch) {
+        try {
+          const sd = JSON.parse(stressMatch[1]);
+          patient.sessionScores.push(sd.score);
+          patient.sessionSignals.push(sd.signals || []);
+          console.log("[Stress]", sd); // visible in browser console
+        } catch(e) {}
+      }
+
+      // Strip stress block before showing to patient or storing in history
+      const cleanReply = raw.replace(/<stress_data>[\s\S]*?<\/stress_data>/, "").trim();
+
+      messagesEl.removeChild(thinking);
+      addBubble("assistant", cleanReply);
+      history.push({ role: "assistant", content: cleanReply });
+
+    } catch (err) {
+      messagesEl.removeChild(thinking);
+      addBubble("assistant", "Something went wrong. Please try again.");
+      console.error(err);
+    }
+
+    flyBtn.disabled = false;
+    inputEl.focus();
+  }
+</script>
+</body>
+</html>
