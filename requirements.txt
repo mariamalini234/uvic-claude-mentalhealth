@@ -1,0 +1,14 @@
+
+Main Description of Hackathon
+
+Anthropic's Claude Hackathon x UVicHacks is a one-day building competition hosted by the Claude Builder Club at the University of Victoria, in collaboration with UVicHacks. This is your chance to build something that genuinely matters using Claude.
+
+
+Selected Track 2: Neuroscience and Mental Health
+
+There are not enough therapists. Stigma prevents people from seeking help. Quality care is gatekept by insurance and geography.
+
+Your challenge: Expand access to mental health support, help people understand their mental health, or provide evidence-based therapeutic tools.
+
+Examples: always-available therapeutic support, mental health literacy tools, stress and burnout prevention, peer support facilitation
+ 
