@@ -1,3 +1,38 @@
+MindSpace: A hierarchical stress inference + decision + AI conditioning system (SBERT-Based Stress Scoring Pipeline)
+
+Overview: This project uses Sentence-BERT embeddings to estimate user stress levels from therapy conversation data. It includes two pipelines:
+
+Pipeline 1: Computes session-level stress score per user based on combined messages
+Pipeline 2: Aggregates all sessions per user to estimate overall stress state and normalize scores
+
+Stress is computed using semantic similarity between user text and predefined stress/calm anchor sentences.
+
+How to Run:
+1. Install dependencies - pip install pandas numpy scikit-learn sentence-transformers
+2. Prepare data -
+Place datasets in: ./data/
+Required files: Categorized_Mental_Health_Data.csv & Dummy_Mental_Health_Conversations.csv
+3. Run pipeline - python stress_indicator.py
+4. Outputs - Generated files will be saved in: ./output/
+Includes: Per-user stress scores (session-level)
+Combined dataset with dual-anchor scoring
+User-level aggregated stress summary
+AI-ready session history prompts
+5. Core Method: SBERT model: all-MiniLM-L6-v2
+Stress score = cosine similarity with stress anchors
+Calm comparison used for relative scaling
+Final scores normalized to 0–100 scale
+6. Output Artifacts: sbert_stress_scores_per_user.csv → session-level stress
+combined_mentalhealth_data*.csv → merged dataset
+user_stress_summary.csv → user-level classification
+AI_user_prompts_with_history.csv → LLM-ready context to be used in index.html
+7. Next Steps: Improve anchor calibration (reduce bias toward neutral text)
+Optional visualization of stress trends per user
+Self-check webapp.
+
+
+
+
 Mental Health Stress Analysis using SBERT:
 
 Overview
